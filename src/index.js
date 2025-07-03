@@ -16,12 +16,12 @@ app.use(express.json({limit: '50mb'}));
 app.use(express.urlencoded({limit: '50mb'}));
 
 
-app.use("/viviane", express.static("viviane"))
+app.use("/sistema", express.static("sistema"))
 app.use(express.json())
 
 // Rota raiz redirecionando para a página de login
 app.get('/', (req, res) => {
-    res.redirect('/viviane/Login/Login.html');
+    res.redirect('/sistema/Login/Login.html');
 });
 
 app.get("/oi", (req, res) => {
