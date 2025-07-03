@@ -29,6 +29,6 @@ verificaNaoAutenticado()
           "Content-Type": "application/json"
       }
   }).finally(() => {
-   window.location.href = `/viviane/redefinir_senha/redefinir_senha.html?user=${usuario}`
+   window.location.href = `/sistema/redefinir_senha/redefinir_senha.html?user=${usuario}`
   })
  }) 

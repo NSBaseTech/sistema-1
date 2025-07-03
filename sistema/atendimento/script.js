@@ -1361,8 +1361,8 @@ function generatePDF() {
     const fileName = `${title}_${nomePaciente}.pdf`;
 
     if (title) {
-        toDataURL('/viviane/Logo/logo_lufcam.png', function (headerImage) {
-            toDataURL('/viviane/Logo/logo_lufcam.png', function (footerImage) {
+        toDataURL('/sistema/Logo/logo_lufcam.png', function (headerImage) {
+            toDataURL('/sistema/Logo/logo_lufcam.png', function (footerImage) {
                 const docDefinition = {
                     header: {
                         image: headerImage,
