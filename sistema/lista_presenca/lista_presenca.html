@@ -21,9 +21,8 @@
                 <h1>
                     <a href="../meuPerfil/meuPerfil.html">
 
-                        <div id="meuUsuario"
-                            style="flex: 1 1 0; color: white; font-size: 16px; font-family: Nunito; font-weight: 400; word-wrap: break-word">
-                            <i style="font-size:large; align-items: center; " class="bi bi-person-square"></i>
+                        <div id="meuUsuario" class="meuUsuario">
+                            <i class="bi bi-person-square"></i>
                             <br>
                             <p style="text-align: center;" id="userGreeting"></p>
                             <h4 style="font-size: xx-small;margin: 0; color: aqua; text-align: center;">Editar perfil
@@ -44,7 +43,7 @@
 
                 <h4>
                     <a href="../lista_presenca/lista_presenca.html">
-                        <i class="bi bi-journals"></i> Cadastro de Convênio</a>
+                        <i class="bi bi-journals"></i> Lista de Presença</a>
                 </h4>
 
                 <h4>
@@ -52,8 +51,10 @@
                         <i class="bi bi-calendar2-check"></i> Agendamento</a>
                 </h4>
 
+
+
                 <h4>
-                    <a href="../Fluxo_de_caixa/fluxo.html" id="flx-lateral">
+                    <a href="../Fluxo_de_caixa/fluxo.html" id="flxLateral">
                         <i class="bi bi-cash-coin"></i> Fluxo de Caixa</a>
                 </h4>
             </div>
@@ -81,50 +82,60 @@
         </label>
     </div>
 
-    <div class="container" id="mod-cancelado" class="canceladoSt">
-        
 
-            <form onsubmit="cancelado(event)" id="formcancelado" class="form">
 
-                <div class="heading">Lista de Consultas</div>
 
-                <select class="input" name="name" id="age_name_cancelado" style="margin-bottom: 2%; margin-right: 2%;">
-                    <option value="">Selecione um paciente</option>
-                </select>
+    <div class="container" id="mod-Presenca" class="PresencaSt">
 
-                <button class="cancel-button" onclick="loadConsultas(event)">Buscar Consultas</button>
-                <br>
+        <form onsubmit="presenca(event)" id="formpresenca" class="form">
 
-                <br>
+            <div class="heading">Lista de Presença</div>
+            <br>
+            <select style="padding: 8px; background: white; border-radius: 8px; margin-top: 2%; margin-bottom: 2%;"
+                id="lista">
+                <option value="-">Selecione um especialista</option>
+            </select>
+            <br>
+            <select class="input" name="name" id="age_name_presenca" style="margin-bottom: 2%; margin-right: 2%;">
+                <option value="">Selecione um paciente</option>
+            </select>
 
-                <div><b>Lista de Consultas</b></div>
-                <div class="containertabela">
-                    <div class="tableCancelados">
-                        <table id="tableCancelados">
-                            <thead>
-                                <tr>
-                                    <th>Selecione</th>
-                                    <th class="columnAmount">Nome do Paciente</th>
-                                    <th class="columnType">Data da Consulta</th>
-                                    <th class="columnAction">Horário da Consulta</th>
-                                    <th class="columnAction">Horário de Término</th>
-                                    <th class="columnAction">Status da Consulta</th>
-                                    <th class="columnAction">Status do Pagamento</th>
+            <button class="cancel-button" onclick="loadConsultas(event)">Buscar Consultas</button>
+            <br>
 
-                                </tr>
-                            </thead>
-                            <tbody id="tbodyCancelado">
-                            </tbody>
+            <br>
 
-                        </table>
-                    </div>
+            <div><b>Lista de Consultas</b></div>
+            <div class="containertabela">
+                <div class="tablePresencas">
+                    <table id="tablePresencas">
+                        <thead>
+                            <tr>
+                                <th>Selecione</th>
+                                <th class="columnAmount">Nome do Paciente</th>
+                                <th class="columnType">Data da Consulta</th>
+                                <th class="columnAction">Horário da Consulta</th>
+                                <th class="columnAction">Horário de Término</th>
+                                <th class="columnAction">Status da Consulta</th>
+                                <th class="columnAction">Status do Pagamento</th>
 
-                    <button class="cancel-button" onclick="deleteSelectedRows(event)">Excluir Selecionados</button>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyPresenca">
+                        </tbody>
 
-                    <input class="login-button" type="button" value="FECHAR" id="btn-close-cancelado">
-            </form>
+                    </table>
+                </div>
 
-        
+                <button class="cancel-button" onclick="deleteSelectedRows(event)">Excluir Selecionados</button>
+
+                <input class="login-button" type="button" value="VOLTAR" id="btn-voltar-presenca">
+            </div>
+    </div>
+    </form>
+
+
+
     </div>
     <script src="../global/auth.js"></script>
     <script type="text/javascript" src="lista_presenca.js"></script>

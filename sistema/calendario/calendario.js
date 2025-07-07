@@ -1,4 +1,4 @@
-verificaAutenticado()
+verificaAutenticado() 
 
 const modAgen = document.getElementById('mod-agen')
 const modEspera = document.getElementById('mod-espera')
