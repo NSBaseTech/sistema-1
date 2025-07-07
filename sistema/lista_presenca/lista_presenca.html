@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../global/font.css">
-    <link rel="stylesheet" href="cadastro_convenio.css">
+    <link rel="stylesheet" href="lista_presenca.css">
     <link rel="stylesheet" href="../chat/chat.css">
     <link rel="shortcut icon" href="../Logo/LOGO_02_DEGRADE.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <iframe class="unstyled"
-        src="https://glorious-journey-5g475pg9gvjw3749q-3001.app.github.dev/sistema/chat/chat.html" height="550"; width="350" ></iframe>
-    <title>cadastro_convenio</title>
+    <iframe class="unstyled" src="https://glorious-journey-5g475pg9gvjw3749q-3001.app.github.dev/sistema/chat/chat.html"
+        height="550" ; width="350"></iframe>
+    <title>lista_presenca</title>
 </head>
 
 <body>
@@ -23,10 +23,11 @@
 
                         <div id="meuUsuario"
                             style="flex: 1 1 0; color: white; font-size: 16px; font-family: Nunito; font-weight: 400; word-wrap: break-word">
-                            <i style="font-size:large; align-items: center; " class="bi bi-person-square"></i> 
+                            <i style="font-size:large; align-items: center; " class="bi bi-person-square"></i>
                             <br>
                             <p style="text-align: center;" id="userGreeting"></p>
-                            <h4 style="font-size: xx-small;margin: 0; color: aqua; text-align: center;">Editar perfil</h4>
+                            <h4 style="font-size: xx-small;margin: 0; color: aqua; text-align: center;">Editar perfil
+                            </h4>
                         </div>
                 </h1>
 
@@ -42,7 +43,7 @@
                 </h4>
 
                 <h4>
-                    <a href="../cadastro_convenio/cadastro_convenio.html">
+                    <a href="../lista_presenca/lista_presenca.html">
                         <i class="bi bi-journals"></i> Cadastro de Convênio</a>
                 </h4>
 
@@ -80,33 +81,53 @@
         </label>
     </div>
 
-    <div class="container">
+    <div class="container" id="mod-cancelado" class="canceladoSt">
+        
 
-        <div class="heading">Cadastro de Convênio</div> <br>
+            <form onsubmit="cancelado(event)" id="formcancelado" class="form">
 
-        <div class="NS"><b>NS BaseTech</b></div>
-        <div class="hr-customizado"></div>
+                <div class="heading">Lista de Consultas</div>
 
-        <form onsubmit="cadastro_convenio(event)" class="form">
+                <select class="input" name="name" id="age_name_cancelado" style="margin-bottom: 2%; margin-right: 2%;">
+                    <option value="">Selecione um paciente</option>
+                </select>
 
-            <input class="voltar-button" type="button" value="Voltar" id="btn_voltar_cvn"></input>
-            <input class="input" type="text" name="name_cvn" id="name_cvn" placeholder="Nome do Convênio">
-            <input class="input" type="text" name="cnpj" id="cnpj" placeholder="CNPJ"
-                pattern="\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}">
-            <input class="input" type="text" name="valores" id="valores" placeholder="Valores">
-            <br>
-            <br>
-            <h3 class="margem">Data de Contratação</h3>
-            <input class="input" type="date" name="data_contratacao" id="data_contratacao"
-                placeholder="Data de Contratação">
+                <button class="cancel-button" onclick="loadConsultas(event)">Buscar Consultas</button>
+                <br>
 
-            <input class="login-button" type="submit" value="Enviar" id="btn_enviar_cvn">
+                <br>
 
-        </form>
+                <div><b>Lista de Consultas</b></div>
+                <div class="containertabela">
+                    <div class="tableCancelados">
+                        <table id="tableCancelados">
+                            <thead>
+                                <tr>
+                                    <th>Selecione</th>
+                                    <th class="columnAmount">Nome do Paciente</th>
+                                    <th class="columnType">Data da Consulta</th>
+                                    <th class="columnAction">Horário da Consulta</th>
+                                    <th class="columnAction">Horário de Término</th>
+                                    <th class="columnAction">Status da Consulta</th>
+                                    <th class="columnAction">Status do Pagamento</th>
+
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyCancelado">
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    <button class="cancel-button" onclick="deleteSelectedRows(event)">Excluir Selecionados</button>
+
+                    <input class="login-button" type="button" value="FECHAR" id="btn-close-cancelado">
+            </form>
+
+        
     </div>
-
     <script src="../global/auth.js"></script>
-    <script type="text/javascript" src="cadastro_convenio.js"></script>
+    <script type="text/javascript" src="lista_presenca.js"></script>
 
 </body>
 
