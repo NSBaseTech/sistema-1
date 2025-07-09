@@ -55,6 +55,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         itemsPresenca = await response.json();
 
+
+        // Filtrar apenas consultas com Status_da_Consulta igual a "Confirmado"
+        itemsPresenca = itemsPresenca.filter(item => item.Status_da_Consulta === "Confirmado");
+
+
         itemsPresenca.map(arg => {
             arg.Nome = todosPacientes.find(({ id }) => id === arg.Nome)?.Nome || "Paciente não encontrado";
             return arg;
@@ -80,7 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <td>${dataFormatada}</td>
             <td>${item.Horario_da_consulta}</td>
             <td>${item.Horario_de_Termino_da_consulta}</td>
-            <td>${item.Status_da_Consulta}</td>
+            <td>${item.Status_da_Consulta === "Confirmado" ? "Presente" : item.Status_da_Consulta}</td>
+
       
            
             <td class="columnAction">
