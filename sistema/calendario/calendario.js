@@ -1141,6 +1141,19 @@ draggable.onmousedown = function (event){
    };
 };
 
+window.addEventListener("message", (event)=>{
+if (event.data === "desligamouse"){
+draggable.width = "50" 
+draggable.height = "50"
+}
+
+if (event.data === "ligamouse"){
+draggable.width = "400" 
+draggable.height = "500"
+}
+
+})
+
 document.getElementById("open-chat-btn1").addEventListener("click", () => {
     window.location.href = '../chat/chat.html'
  })

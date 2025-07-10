@@ -979,6 +979,14 @@ input:checked+.slider:before {
   background: lightgreen;
 }
 
+#graficoPresenca {
+  max-width: 300px;
+  max-height: 300px;
+  margin: 20px auto;
+  display: block;
+}
+
+
 
 @media (min-width: 1439px) and (max-width: 1920px) {
   .contato{

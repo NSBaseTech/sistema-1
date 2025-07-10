@@ -809,8 +809,8 @@ iframe {
   max-height: 100%;
   margin-right: 0%;
   z-index: 1000;
-  top: 20%;
-  left: 67.5%;
+  bottom:0;
+  right:0;
   border-radius: 10px;
   user-select: none;
   cursor: move;
@@ -1066,14 +1066,7 @@ iframe {
 
 
 @media (min-width: 1025px) and (max-width: 1269px) {
-  iframe {
-    position: absolute;
-    top: 12%;
-    left: 65%;
-    width: 30%;
 
-
-  }
 
   .open-chat-btn1 {
     display: none;
@@ -1108,11 +1101,7 @@ iframe {
     display:none;
   }
   
-  iframe{
-    left:70%;
-    top:14%;
-    width: 28%;
-  }
+
 
   .canceladoSt{
     position: absolute;
@@ -1124,10 +1113,7 @@ border-radius: 3%;
 }
 
 @media (min-width: 1369px) and (max-width: 1439px){
-  iframe {
-    top: 40%;
-    left: 72%;
-  }
+ 
 
 
   .calendar {
@@ -1160,10 +1146,7 @@ border-radius: 3%;
 }
 
 @media (min-width: 1440px) and (max-width: 1920px) {
-  iframe {
-    top: 34%;
-    left: 72%;
-  }
+ 
 
   .container {
     position: absolute;
@@ -1208,4 +1191,8 @@ border-radius: 3%;
     top: 12%;
 
   }
+}
+
+.desligamouse {
+  pointer-events: none;
 }

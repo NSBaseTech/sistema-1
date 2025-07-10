@@ -188,13 +188,16 @@ document.getElementById("message-input").addEventListener("keypress", function(e
 
 
 // FIM RYAN 1
-
 function toggleChat() {
     var chatPopup = document.getElementById("chat-popup");
     if (chatPopup.style.display === "none" || chatPopup.style.display === "") {
         chatPopup.style.display = "block";
+        window.parent.postMessage("ligamouse")
+       //draggable.classList.add ("desligamouse")
     } else {
         chatPopup.style.display = "none";
+        window.parent.postMessage("desligamouse")
+        //draggable.classList.remove ("desligamouse")
     }
 
     
