@@ -55,12 +55,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
         itemsPresenca = await response.json();
 
-
-        // Filtrar apenas consultas com Status_da_Consulta igual a "Confirmado"
+        // Filtro: apenas status Confirmado
         itemsPresenca = itemsPresenca.filter(item => item.Status_da_Consulta === "Confirmado");
 
+        // Filtros de data/mês/ano
+        const filtroData = document.getElementById("filtroData").value;  // yyyy-mm-dd
+        const filtroMes = document.getElementById("filtroMes").value;    // MM
+        const filtroAno = document.getElementById("filtroAno").value;    // yyyy
 
-        itemsPresenca.map(arg => {
+        itemsPresenca = itemsPresenca.filter(item => {
+            const [ano, mes, dia] = item.Data_do_Atendimento.split("T")[0].split("-");
+
+            const dataISO = `${ano}-${mes}-${dia}`; // Formato ISO para comparar com input
+
+            if (filtroData && filtroData !== dataISO) return false;
+            if (filtroMes && filtroMes !== mes) return false;
+            if (filtroAno && filtroAno !== ano) return false;
+
+            return true;
+        });
+
+        // Substitui id do paciente pelo nome
+        itemsPresenca = itemsPresenca.map(arg => {
             arg.Nome = todosPacientes.find(({ id }) => id === arg.Nome)?.Nome || "Paciente não encontrado";
             return arg;
         });
@@ -68,7 +84,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function insertItemPresenca(item, index) {
         let tr = document.createElement("tr");
-
         const date = new Date(item.Data_do_Atendimento);
         const adjustedDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
         const dataFormatada = adjustedDate.toLocaleDateString("pt-BR", {
@@ -80,18 +95,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const especialistaNome = consultores.find(e => e.Usuario === item.Especialista)?.Nome || "Especialista não encontrado";
 
         tr.innerHTML = `
-           
             <td id="${item.id}">${item.Nome}</td>
             <td>${dataFormatada}</td>
             <td>${item.Horario_da_consulta}</td>
             <td>${item.Horario_de_Termino_da_consulta}</td>
             <td>${item.Status_da_Consulta === "Confirmado" ? "Presente" : item.Status_da_Consulta}</td>
-
-      
-           
+            
             <td class="columnAction">
                 <button type="button" onclick='showModal(${JSON.stringify(item)})'>
-                 
+           
                 </button>
             </td>
         `;

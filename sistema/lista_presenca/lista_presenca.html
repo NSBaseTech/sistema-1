@@ -100,24 +100,52 @@
                 <option value="">Selecione um paciente</option>
             </select>
 
+            <!-- Filtro por data -->
+             <br>
+<label for="filtroData">Data:</label>
+<input type="date" id="filtroData" name="filtroData" />
+
+<!-- Filtro por mês -->
+<label for="filtroMes">Mês:</label>
+<select id="filtroMes" name="filtroMes">
+  <option value="">Todos</option>
+  <option value="01">Janeiro</option>
+  <option value="02">Fevereiro</option>
+  <option value="03">Março</option>
+  <option value="04">Abril</option>
+  <option value="05">Maio</option>
+  <option value="06">Junho</option>
+  <option value="07">Julho</option>
+  <option value="08">Agosto</option>
+  <option value="09">Setembro</option>
+  <option value="10">Outubro</option>
+  <option value="11">Novembro</option>
+  <option value="12">Dezembro</option>
+</select>
+
+<!-- Filtro por ano -->
+<label for="filtroAno">Ano:</label>
+<input type="number" id="filtroAno" name="filtroAno" min="2000" max="2100" placeholder="Ano" />
+
+
             <button class="cancel-button" onclick="loadConsultas(event)">Buscar Presença</button>
             <br>
 
             <br>
 
-            
+          
             <div class="containertabela">
                 <div class="tablePresencas">
                     <table id="tablePresencas">
                         <thead>
                             <tr>
-                                
+                              
                                 <th class="columnAmount">Nome do Paciente</th>
                                 <th class="columnType">Data da Consulta</th>
                                 <th class="columnAction">Horário da Consulta</th>
                                 <th class="columnAction">Horário de Término</th>
                                 <th class="columnAction">Status da Consulta</th>
-                                
+                             
 
                             </tr>
                         </thead>
@@ -127,6 +155,7 @@
                     </table>
                 </div>
 
+                <button class="cancel-button" onclick="deleteSelectedRows(event)">Excluir Selecionados</button>
 
                 <input class="login-button" type="button" value="VOLTAR" id="btn-voltar-presenca">
             </div>
