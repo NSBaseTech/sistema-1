@@ -809,8 +809,8 @@ iframe {
   max-height: 100%;
   margin-right: 0%;
   z-index: 1000;
-  bottom:0;
-  right:0;
+  bottom: 0;
+  right: 0;
   border-radius: 10px;
   user-select: none;
   cursor: move;
@@ -909,12 +909,37 @@ iframe {
     overflow: auto;
   }
 
-  .canceladoSt{
+  .canceladoSt {
     position: absolute;
-    left:5%;
+    left: 5%;
     top: 2%;
 
   }
+
+
+}
+
+.open-lista_alunos {
+  position: absolute;
+  top: 85%;
+  right: 21px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  bottom: 20px;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(45deg, rgb(241, 130, 65) 0%, rgb(63, 217, 223) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 
 
 }
@@ -1008,9 +1033,9 @@ iframe {
     text-align: center;
   }
 
-  .canceladoSt{
+  .canceladoSt {
     position: absolute;
-    left:3%;
+    left: 3%;
     top: 2%;
 
   }
@@ -1055,9 +1080,9 @@ iframe {
     font-size: small;
   }
 
-  .canceladoSt{
+  .canceladoSt {
     position: absolute;
-    left:2%;
+    left: 2%;
     top: 2%;
 
   }
@@ -1086,9 +1111,9 @@ iframe {
     top: 2%;
   }
 
-  .canceladoSt{
+  .canceladoSt {
     position: absolute;
-    left:2%;
+    left: 2%;
     top: 2%;
 
   }
@@ -1097,30 +1122,30 @@ iframe {
 
 @media (min-width: 1269px) and (max-width: 1368px) {
 
-  .open-chat-btn1{
-    display:none;
+  .open-chat-btn1 {
+    display: none;
   }
-  
 
 
-  .canceladoSt{
+
+  .canceladoSt {
     position: absolute;
-    left:10%;
+    left: 10%;
     top: 2%;
-border-radius: 3%;
+    border-radius: 3%;
   }
 
 }
 
-@media (min-width: 1369px) and (max-width: 1439px){
- 
+@media (min-width: 1369px) and (max-width: 1439px) {
+
 
 
   .calendar {
     position: absolute;
-    left:8%;
+    left: 8%;
     top: 30%;
-   
+
   }
 
   .container {
@@ -1131,9 +1156,9 @@ border-radius: 3%;
     width: 58%;
   }
 
-  .canceladoSt{
+  .canceladoSt {
     position: absolute;
-    left:15%;
+    left: 15%;
     top: 2%;
 
   }
@@ -1146,21 +1171,21 @@ border-radius: 3%;
 }
 
 @media (min-width: 1440px) and (max-width: 1920px) {
- 
+
 
   .container {
     position: absolute;
     top: 26%;
     left: 38%;
-    width:60%;
-     
+    width: 60%;
+
   }
 
   .calendar {
     position: absolute;
-    left:5%;
+    left: 5%;
     top: 27%;
-   
+
   }
 
 
@@ -1168,9 +1193,9 @@ border-radius: 3%;
     display: none;
   }
 
-  .canceladoSt{
+  .canceladoSt {
     position: absolute;
-    left:14%;
+    left: 14%;
     top: 2%;
 
   }
@@ -1185,9 +1210,9 @@ border-radius: 3%;
     display: none;
   }
 
-  .canceladoSt{
+  .canceladoSt {
     position: absolute;
-    left:21%;
+    left: 21%;
     top: 12%;
 
   }

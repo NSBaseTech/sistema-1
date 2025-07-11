@@ -120,8 +120,22 @@ async function carregarLista(force) {
 
         if (contentEl) {
 
-            contentEl.innerHTML = `${todosPacientes.find(pac => arg.Nome === pac.id)?.Nome} - Especialista: ${consultores.find(arg => arg.Usuario === list.value).Nome} - Observação: ${arg.observacao}`
+         contentEl.style = 'cursor: pointer; user-select: none; position: relative;';
 
+// Conteúdo da faixa com o botão na ponta
+contentEl.innerHTML = `
+  <span style="display: inline-block; padding-right: 40px;">
+    ${todosPacientes.find(pac => arg.Nome === pac.id)?.Nome} - Especialista: ${consultores.find(arg => arg.Usuario === list.value).Nome} - Observação: ${arg.observacao}
+  </span>
+
+  <button onclick="event.stopPropagation();window.location.href='https://glorious-journey-5g475pg9gvjw3749q-3001.app.github.dev/sistema/lista_alunos/lista_alunos.html'" class="open-lista_alunos" id="open-lista_alunos-${arg.id}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
+      class="bi bi-person-fill-add" viewBox="0 0 16 16">
+      <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+      <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
+    </svg>
+  </button>
+`;
             contentEl.style = 'cursor: pointer; user-select: none;'
 
             const lis = document.querySelectorAll("#olcards li");
@@ -189,6 +203,8 @@ async function carregarLista(force) {
             statusEl.classList.add(`status-${statusFormated}`);
         }
     })
+
+    
 
 }
 
