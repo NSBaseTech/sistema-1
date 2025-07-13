@@ -128,7 +128,7 @@ contentEl.innerHTML = `
     ${todosPacientes.find(pac => arg.Nome === pac.id)?.Nome} - Especialista: ${consultores.find(arg => arg.Usuario === list.value).Nome} - Observação: ${arg.observacao}
   </span>
 
-  <button onclick="event.stopPropagation();window.location.href='https://glorious-journey-5g475pg9gvjw3749q-3001.app.github.dev/sistema/lista_alunos/lista_alunos.html'" class="open-lista_alunos" id="open-lista_alunos-${arg.id}">
+<button onmouseenter="abrirPopupListaAlunos('${arg.Horario_da_consulta}', '${todosPacientes.find(pac => arg.Nome === pac.id)?.Nome}', event)" onmouseleave="fecharPopupComDelay()" class="open-lista_alunos" id="open-lista_alunos-${arg.id}">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
       class="bi bi-person-fill-add" viewBox="0 0 16 16">
       <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
@@ -207,6 +207,51 @@ contentEl.innerHTML = `
     
 
 }
+
+function abrirPopupListaAlunos(horarioConsulta, especialista, event) {
+  const popup = document.getElementById('popup-lista-alunos');
+  const lista = document.getElementById('lista-alunos-popup');
+  const titulo = document.getElementById('titulo-especialista');
+
+  // limpa conteúdo anterior
+  lista.innerHTML = '';
+  titulo.innerText = `${especialista}`;
+
+  // filtrar alunos do mesmo horário
+  const alunosMesmoHorario = todosPacientes.filter(p =>
+    p.Horario_da_consulta === horarioConsulta &&
+    p.Especialista === especialista
+  );
+
+  if (alunosMesmoHorario.length === 0) {
+    lista.innerHTML = '<li style="color: gray;">Nenhum aluno agendado nesse horário.</li>';
+  } else {
+    alunosMesmoHorario.forEach(p => {
+      lista.innerHTML += `<li>${p.Nome}</li>`;
+    });
+  }
+
+  // posicionar popup perto do botão clicado
+  popup.style.left = `${event.clientX - 250}px`;
+  popup.style.top = `${event.clientY + 10}px`;
+  popup.style.display = 'block';
+}
+
+function fecharPopupComDelay() {
+  const popup = document.getElementById('popup-lista-alunos');
+  popup.closeTimeout = setTimeout(() => {
+    popup.style.display = 'none';
+  }, 300);
+}
+
+document.getElementById('popup-lista-alunos').addEventListener('mouseenter', () => {
+  clearTimeout(document.getElementById('popup-lista-alunos').closeTimeout);
+});
+
+document.getElementById('popup-lista-alunos').addEventListener('mouseleave', () => {
+  document.getElementById('popup-lista-alunos').style.display = 'none';
+});
+
 
 function getIndexByDataMessage(dataMessage) {
     const element = document.querySelector(`[data-message="${dataMessage}"]`);
