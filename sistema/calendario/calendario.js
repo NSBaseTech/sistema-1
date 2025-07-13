@@ -4,6 +4,7 @@ const modAgen = document.getElementById('mod-agen')
 const modEspera = document.getElementById('mod-espera')
 const modCancelado = document.getElementById('mod-cancelado')
 
+
 let todosPacientes = []
 
 const isLeapYear = (year) => {
@@ -109,8 +110,12 @@ async function carregarLista(force) {
     data = data.filter(arg =>
         arg.Data_do_Atendimento === `${cY}-${cM}-${cD}` &&
         arg.Especialista.toLowerCase().includes(document.getElementById("lista").value.toLowerCase())
+        
     )
 
+window.agendamentosAlunos = data.filter(a => a.Eh_Aluno === true);
+
+  data = data.filter(a => a.Eh_Aluno !== true);
 
     data.forEach(arg => {
         const contentId = `agendamento-${arg.Horario_da_consulta}`;
@@ -128,7 +133,13 @@ contentEl.innerHTML = `
     ${todosPacientes.find(pac => arg.Nome === pac.id)?.Nome} - Especialista: ${consultores.find(arg => arg.Usuario === list.value).Nome} - Observação: ${arg.observacao}
   </span>
 
-<button onmouseenter="abrirPopupListaAlunos('${arg.Horario_da_consulta}', '${todosPacientes.find(pac => arg.Nome === pac.id)?.Nome}', event)" onmouseleave="fecharPopupComDelay()" class="open-lista_alunos" id="open-lista_alunos-${arg.id}">
+<button 
+  onmouseenter="event.stopPropagation(); abrirPopupListaAlunos('${arg.Horario_da_consulta}', '${consultores.find(c => c.Usuario === arg.Especialista)?.Nome || arg.Especialista}', event)" 
+  onmouseleave="fecharPopupComDelay()" 
+  onclick="alunos(event)" 
+  class="open-lista_alunos" 
+  id="alunos-${arg.id}">
+
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
       class="bi bi-person-fill-add" viewBox="0 0 16 16">
       <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
@@ -183,7 +194,7 @@ contentEl.innerHTML = `
                 status_pagamentoinp.value = arg.Status_do_pagamento
                 observacaoinp.value = arg.observacao
                 id_agendamento.value = arg.id
-
+                document.getElementById("eh_aluno").checked = arg.Eh_Aluno === true;
                 document.getElementById("formagendamento").dataset.agendamentoid = arg.id
             }
 
@@ -215,19 +226,25 @@ function abrirPopupListaAlunos(horarioConsulta, especialista, event) {
 
   // limpa conteúdo anterior
   lista.innerHTML = '';
-  titulo.innerText = `${especialista}`;
+  titulo.innerText = `Especialista: ${especialista}`;
 
   // filtrar alunos do mesmo horário
-  const alunosMesmoHorario = todosPacientes.filter(p =>
-    p.Horario_da_consulta === horarioConsulta &&
-    p.Especialista === especialista
-  );
+ const alunosMesmoHorario = (window.agendamentosAlunos || []).filter(p =>
+  p.Horario_da_consulta === horarioConsulta &&
+  p.Especialista === especialista &&
+  p.Eh_Aluno === true 
+);
+
 
   if (alunosMesmoHorario.length === 0) {
     lista.innerHTML = '<li style="color: gray;">Nenhum aluno agendado nesse horário.</li>';
   } else {
     alunosMesmoHorario.forEach(p => {
-      lista.innerHTML += `<li>${p.Nome}</li>`;
+     if (!p.Eh_Aluno) return;  // pula se não for aluno 
+    const paciente = todosPacientes.find(tp => tp.id === p.Nome);
+    const nomeAluno = paciente ? paciente.Nome : p.Nome || "Aluno não encontrado";
+
+      lista.innerHTML += `<li>${nomeAluno}</li>`;
     });
   }
 
@@ -235,6 +252,7 @@ function abrirPopupListaAlunos(horarioConsulta, especialista, event) {
   popup.style.left = `${event.clientX - 250}px`;
   popup.style.top = `${event.clientY + 10}px`;
   popup.style.display = 'block';
+ 
 }
 
 function fecharPopupComDelay() {
@@ -515,6 +533,7 @@ const status_consultainp = document.getElementById("status_c")
 const status_pagamentoinp = document.getElementById("status_pagamento")
 const observacaoinp = document.getElementById("observacao")
 const id_agendamento = document.getElementById("id_agendamento")
+const ehAluno = document.getElementById("eh_aluno").checked
 
 function atualizaTelefone() {
     const paciente = pacientesFiltrados.find(paciente => paciente.id === nameinp.value)
@@ -584,7 +603,7 @@ function converterDataFormatoBrasileiroParaISO(data) {
 function agendamento(event) {
     event.preventDefault();
     
-
+    const ehAluno = document.getElementById("eh_aluno").checked;
     const form = document.getElementById("formagendamento");
     const { agendamentoid: agendamentoId } = form.dataset;
 
@@ -598,7 +617,8 @@ function agendamento(event) {
         valorConsulta: Number(valor_consultainpinp.value),
         statusConsulta: status_consultainp.value,
         statusPagamento: status_pagamentoinp.value,
-        observacao: observacaoinp.value
+        observacao: observacaoinp.value,
+        Eh_Aluno: ehAluno,
     };
 
     const clearInputs = () => {
@@ -611,6 +631,7 @@ function agendamento(event) {
         status_consultainp.value = "";
         status_pagamentoinp.value = "";
         observacaoinp.value = "";
+        document.getElementById("eh_aluno").checked = false;  // só para resetar o checkbox
     };
 
     
@@ -671,6 +692,10 @@ const createAppointment = (data) => {
     
 
     const checkForConflicts = (data, callback, agendamentoId = null) => {
+          if (data.Eh_Aluno) {
+          callback(data);
+          return;
+            }
         // Adiciona o filtro de especialista à consulta
         fetch(`/agendamentos?data=${data.Data_do_Atendimento}&especialista=${data.Especialista}`)
             .then(response => {
@@ -723,30 +748,50 @@ const createAppointment = (data) => {
         Valor_da_Consulta: inputs.valorConsulta,
         Status_da_Consulta: inputs.statusConsulta,
         Status_do_pagamento: inputs.statusPagamento,
-        observacao: inputs.observacao
+        observacao: inputs.observacao,
+        Eh_Aluno: ehAluno
     };
+
+    if (appointmentData.isAluno && !appointmentData.observacao.includes('[ALUNO]')) {
+    appointmentData.observacao = '[ALUNO] ' + appointmentData.observacao;
+}
 
     console.log(agendamentoId)
 
-    if (agendamentoId === '0') {
-        const datasFuturasProgramadas = calculadata();
+   if (agendamentoId === '0') {
+    const datasFuturasProgramadas = calculadata();
 
-        if (datasFuturasProgramadas.length > 0) {
-            datasFuturasProgramadas.forEach(data => {
-                const futureAppointmentData = {
-                    ...appointmentData,
-                    Data_do_Atendimento: data.toISOString().split('T')[0]
-                };
+    if (datasFuturasProgramadas.length > 0) {
+        datasFuturasProgramadas.forEach(data => {
+            const futureAppointmentData = {
+                ...appointmentData,
+                Data_do_Atendimento: data.toISOString().split('T')[0]
+            };
+
+            if (futureAppointmentData.Eh_Aluno) {
+                createAppointment(futureAppointmentData); // pula o filtro
+            } else {
                 checkForConflicts(futureAppointmentData, createAppointment);
-            });
-        }
+            }
+        });
+    }
 
-        checkForConflicts(appointmentData, createAppointment);
+    if (appointmentData.Eh_Aluno) {
+        createAppointment(appointmentData); // pula o filtro
     } else {
-        console.log(agendamentoId)
-        const updatedData = { id: agendamentoId, ...appointmentData };
+        checkForConflicts(appointmentData, createAppointment);
+    }
+} else {
+    const updatedData = { id: agendamentoId, ...appointmentData };
+
+    if (appointmentData.Eh_Aluno) {
+        updateAppointment(updatedData); // pula o filtro
+    } else {
         checkForConflicts(updatedData, updateAppointment, agendamentoId);
     }
+}
+
+
 
 
 }
@@ -1219,4 +1264,222 @@ document.getElementById("open-chat-btn1").addEventListener("click", () => {
     window.location.href = '../chat/chat.html'
  })
  
- 
+
+
+ //ALUNOS
+
+// document.getElementById('alunos').addEventListener('click', () => {
+//     if (list.value === "-") {
+//         alert("Selecione o Especialista")
+//         return
+//     }
+
+//     pacientesFiltrados = todosPacientes.filter(({ Especialista }) => Especialista === list.value)
+//     age_name.disabled = false
+//     document.getElementById("btn-start-atendimento").style = "display:none"
+
+//     nameinp.innerHTML = ''
+//     pacientesFiltrados.forEach(item => {
+//         nameinp.innerHTML += `<option value="${item.id}">${item.Nome}</option>`
+//     })
+
+//     document.getElementById("formalunos").dataset.alunosid = "0";
+//     nameinp.value = "" // A escrita antes do : tem que ta igual ao campo que foi criado no prisma
+//     phoneinp.value = ""
+//     data_atendimentoinp.value = ""
+//     horario_consultainp.value = ""
+//     horariot_consultainp.value = ""
+//     valor_consultainpinp.value = ""
+//     status_consultainp.value = ""
+//     status_pagamentoinp.value = ""
+//     observacaoinp.value = ""
+//     id_alunos.value = ""
+//     modAlunos.showModal()
+// });
+
+// document.getElementById('btn-close1').addEventListener('click', () => {
+
+//     modAlunos.close()
+// })
+
+// document.getElementById("btn_voltar_al").addEventListener("click", () => {
+//     window.location.href = '../Menu/menu.html'
+// })
+
+
+// nameinp = document.getElementById("age_name") //O getElementById tem que ser igual o id
+// phoneinp = document.getElementById("phone")
+// data_atendimentoinp = document.getElementById("data_atendimento")
+// horario_consultainp = document.getElementById("horario_consulta")
+// horariot_consultainp = document.getElementById("horariot_consulta")
+// valor_consultainpinp = document.getElementById("valor_consulta")
+// status_consultainp = document.getElementById("status_c")
+// status_pagamentoinp = document.getElementById("status_pagamento")
+// observacaoinp = document.getElementById("observacao")
+// const id_alunos = document.getElementById("id_alunos")
+
+// function atualizaTelefone() {
+//     const paciente = pacientesFiltrados.find(paciente => paciente.id === nameinp.value)
+//     phoneinp.value = paciente.Telefone
+// }
+
+
+// function calculadata() {
+
+//     var repeticoes = parseInt(document.getElementById("repeticoes").value);
+//     var tipo = document.getElementById("periodo").value;
+//     var periodo = 0;
+//     var dataBrasileira = document.getElementById("data_atendimento").value;
+
+
+//     switch (tipo) {
+//         case "semanal":
+//             periodo = 7;
+//             break;
+//         case "quinzenal":
+//             periodo = valorQuinzenal;
+//             break;
+//         case "mensal":
+//             periodo = 30;
+//             break;
+//         case "anual":
+//             periodo = 365;
+//             break;
+//         default:
+//             periodo = 0;
+//             break;
+//     }
+//     var texto = "";
+//     var arrayData = [];
+
+//     for (var i = 1; i <= repeticoes; i++) {
+//         var data = new Date(dataBrasileira);
+//         data.setDate(data.getDate() + i * periodo)
+//         arrayData.push(data);
+//     }
+//     return arrayData;
+// }
+
+// document.getElementById('mostrarSubform').addEventListener('change', function () {
+//     var subform = document.getElementById('subform');
+//     subform.style.display = this.checked ? 'block' : 'none';
+// });
+
+// document.getElementById('valor_consulta').addEventListener('input', function() {
+//     let valor = this.value.replace(/\D/g, ''); // Remove tudo que não é número
+
+//     if (valor.length > 0) {
+//         // Divide o valor por 100 para adicionar os centavos
+//         valor = (parseFloat(valor) / 100).toFixed(2);
+//     }
+
+//     // Atualiza o campo com o valor formatado como número (sem "R$")
+//     this.value = valor;
+// });
+
+
+// function converterDataFormatoBrasileiroParaISO(data) {
+//     var partes = data.split("/");
+//     return partes[2] + "-" + partes[1] + "-" + partes[0];
+// }
+
+// function alunos(event) {
+//     event.preventDefault();
+    
+
+//     const form = document.getElementById("formalunos");
+//     const { alunosid: alunosId } = form.dataset;
+
+//     const inputs = {
+//         nome: nameinp.value,
+//         telefone: phoneinp.value,
+//         especialista: list.value,
+//         dataAtendimento: data_atendimentoinp.value,
+//         horarioConsulta: horario_consultainp.value,
+//         horarioTerminoConsulta: horariot_consultainp.value,
+//         valorConsulta: Number(valor_consultainpinp.value),
+//         statusConsulta: status_consultainp.value,
+//         statusPagamento: status_pagamentoinp.value,
+//         observacao: observacaoinp.value
+//     };
+
+//     const clearInputs = () => {
+//         nameinp.value = "";
+//         phoneinp.value = "";
+//         data_atendimentoinp.value = "";
+//         horario_consultainp.value = "";
+//         horariot_consultainp.value = "";
+//         valor_consultainpinp.value = "";
+//         status_consultainp.value = "";
+//         status_pagamentoinp.value = "";
+//         observacaoinp.value = "";
+//     };
+
+    
+
+//     let alertShown = false;
+
+// const createAppointment = (data) => {
+//     fetch("/agendamento", {
+//         method: "POST",
+//         body: JSON.stringify(data),
+//         headers: {
+//             "Content-Type": "application/json"
+//         }
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         if (!alertShown) {
+//             alert("Paciente Agendado com sucesso!");
+//             alertShown = true;  // Defina a flag para evitar alertas futuros
+//         }
+//         clearInputs();
+//         carregarLista(true).catch(console.error);
+//     })
+//     .catch(() => {
+//         if (!alertShown) {
+//             alert("Erro ao Agendar");
+//             alertShown = true;  // Defina a flag para evitar alertas futuros
+//         }
+//     });
+// };
+
+//     const updateAppointment = (data) => {
+//         // Verifica se o status da consulta é "Cancelado" e o status do pagamento é "Pago"
+//         if (data.Status_da_Consulta === "Cancelado" && data.Status_do_pagamento === "Pago") {
+//             alert("Altere o Status do pagamento para 'Pendente' ou 'Cancelado' antes de atualizar.");
+//             return; // Interrompe a execução se as condições forem atendidas
+//         }
+    
+//         // Prossegue com a atualização do agendamento se as condições não forem atendidas
+//         fetch("/agendamento", {
+//             method: "PUT",
+//             body: JSON.stringify(data),
+//             headers: {
+//                 "Content-Type": "application/json"
+//             }
+//         })
+//         .then(response => response.json())
+//         .then(data => {
+//             alert("Paciente Atualizado com sucesso!");
+//             carregarLista(true).catch(console.error);
+           
+//         })
+       
+//         .catch(() => alert("Erro ao atualizar"));
+       
+//     };
+//      const appointmentData = {
+//         Nome: inputs.nome,
+//         Telefone: inputs.telefone,
+//         Especialista: inputs.especialista,
+//         Data_do_Atendimento: inputs.dataAtendimento,
+//         Horario_da_consulta: inputs.horarioConsulta,
+//         Horario_de_Termino_da_consulta: inputs.horarioTerminoConsulta,
+//         Valor_da_Consulta: inputs.valorConsulta,
+//         Status_da_Consulta: inputs.statusConsulta,
+//         Status_do_pagamento: inputs.statusPagamento,
+//         observacao: inputs.observacao
+//     };
+
+// }

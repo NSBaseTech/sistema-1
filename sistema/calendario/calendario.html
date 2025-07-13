@@ -40,7 +40,10 @@
                 onchange="atualizaTelefone()">
 
             </select>
-
+            <label>
+                <input type="checkbox" id="eh_aluno" name="eh_aluno" />
+                É aluno?
+            </label>
 
             </select>
 
@@ -170,6 +173,7 @@
         <input class="close-button" type="submit" value="FECHAR" id="btn-close-espera">
     </dialog>
 
+    <!-- Lista de consultas -->
     <dialog id="mod-cancelado" class="canceladoSt">
 
         <form onsubmit="cancelado(event)" id="formcancelado" class="form">
@@ -214,12 +218,12 @@
 
     </dialog>
 
+    <!-- Lista de alunos -->
     <div id="popup-lista-alunos"
         style="display:none; position:absolute; background:white; border:1px solid #ccc; border-radius:10px; padding:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index:1000; width:250px;">
         <h4 id="titulo-especialista" style="margin-top:0;">Alunos do horário</h4>
         <ul id="lista-alunos-popup" style="padding-left: 20px; margin: 10px 0;"></ul>
     </div>
-
 
 
     <header>

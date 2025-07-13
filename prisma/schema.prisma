@@ -57,6 +57,9 @@ model Agendamento {
   Status_da_Consulta             String
   Status_do_pagamento            String
   observacao                     String
+  recoveryCode                   Int?
+
+  Eh_Aluno Boolean
 }
 
 model cadastro_convenio {
