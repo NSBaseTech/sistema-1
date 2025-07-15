@@ -133,18 +133,14 @@ contentEl.innerHTML = `
     ${todosPacientes.find(pac => arg.Nome === pac.id)?.Nome} - Especialista: ${consultores.find(arg => arg.Usuario === list.value).Nome} - Observação: ${arg.observacao}
   </span>
 
-<button 
+<button type="button" 
+ onclick="event.stopPropagation()"
   onmouseenter="event.stopPropagation(); abrirPopupListaAlunos('${arg.Horario_da_consulta}', '${consultores.find(c => c.Usuario === arg.Especialista)?.Nome || arg.Especialista}', event)" 
-  onmouseleave="fecharPopupComDelay()" 
-  onclick="alunos(event)" 
+  onmouseleave="fecharPopupComDelay()"   
   class="open-lista_alunos" 
   id="alunos-${arg.id}">
-
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white"
-      class="bi bi-person-fill-add" viewBox="0 0 16 16">
-      <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-      <path d="M2 13c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4"/>
-    </svg>
+<i class="bi bi-person-lines-fill"></i>
+   
   </button>
 `;
             contentEl.style = 'cursor: pointer; user-select: none;'
@@ -244,7 +240,16 @@ function abrirPopupListaAlunos(horarioConsulta, especialista, event) {
     const paciente = todosPacientes.find(tp => tp.id === p.Nome);
     const nomeAluno = paciente ? paciente.Nome : p.Nome || "Aluno não encontrado";
 
-      lista.innerHTML += `<li>${nomeAluno}</li>`;
+      lista.innerHTML += `
+ <li style="display: flex; align-items: center;">
+  <span style="flex-grow: 1; text-align: left;">${nomeAluno}</span>
+  <button type="button"  onclick='abrirEdicaoAluno(${JSON.stringify(p)})' style="margin-left: 10px;" title="Editar agendamento">
+    <i class="bi bi-pencil"></i>
+  </button>
+  <br>
+</li>`;
+
+
     });
   }
 
@@ -254,6 +259,35 @@ function abrirPopupListaAlunos(horarioConsulta, especialista, event) {
   popup.style.display = 'block';
  
 }
+
+function abrirEdicaoAluno(agendamento) {
+  pacientesFiltrados = todosPacientes.filter(({ Especialista }) => Especialista === list.value);
+
+  nameinp.innerHTML = '';
+  pacientesFiltrados.forEach(item => {
+    nameinp.innerHTML += `<option value="${item.id}">${item.Nome}</option>`;
+  });
+
+  age_name.disabled = true;
+  document.getElementById("btn-start-atendimento").style = "display:auto";
+
+  modAgen.showModal();
+
+  nameinp.value = agendamento.Nome;
+  phoneinp.value = agendamento.Telefone;
+  list.value = agendamento.Especialista;
+  data_atendimentoinp.value = agendamento.Data_do_Atendimento;
+  horario_consultainp.value = agendamento.Horario_da_consulta;
+  horariot_consultainp.value = agendamento.Horario_de_Termino_da_consulta;
+  valor_consultainpinp.value = agendamento.Valor_da_Consulta;
+  status_consultainp.value = agendamento.Status_da_Consulta;
+  status_pagamentoinp.value = agendamento.Status_do_pagamento;
+  observacaoinp.value = agendamento.observacao;
+  document.getElementById("eh_aluno").checked = agendamento.Eh_Aluno === true;
+  id_agendamento.value = agendamento.id;
+  document.getElementById("formagendamento").dataset.agendamentoid = agendamento.id;
+}
+
 
 function fecharPopupComDelay() {
   const popup = document.getElementById('popup-lista-alunos');
