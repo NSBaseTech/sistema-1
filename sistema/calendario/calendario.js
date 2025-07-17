@@ -107,6 +107,8 @@ async function carregarLista(force) {
     const response = await fetch('/agendamentos')
     let data = await response.json()
 
+    window.todosAgendamentos = [...data]; // salva todos antes de filtrar
+
     data = data.filter(arg =>
         arg.Data_do_Atendimento === `${cY}-${cM}-${cD}` &&
         arg.Especialista.toLowerCase().includes(document.getElementById("lista").value.toLowerCase())
@@ -225,11 +227,27 @@ function abrirPopupListaAlunos(horarioConsulta, especialista, event) {
   titulo.innerText = `Especialista: ${especialista}`;
 
   // filtrar alunos do mesmo horário
- const alunosMesmoHorario = (window.agendamentosAlunos || []).filter(p =>
+ // Pega o agendamento principal baseado no horário e especialista
+const agendamentoPrincipal = (window.todosAgendamentos || []).find(p =>
   p.Horario_da_consulta === horarioConsulta &&
   p.Especialista === especialista &&
-  p.Eh_Aluno === true 
+  !p.Eh_Aluno
 );
+
+
+// Caso não encontre, filtra por horário exato (modo antigo)
+const alunosMesmoHorario = agendamentoPrincipal
+  ? filtrarAlunosNoIntervalo(
+      agendamentoPrincipal.Horario_da_consulta,
+      agendamentoPrincipal.Horario_de_Termino_da_consulta,
+      especialista
+    )
+  : (window.agendamentosAlunos || []).filter(p =>
+      p.Horario_da_consulta === horarioConsulta &&
+      p.Especialista === especialista &&
+      p.Eh_Aluno === true 
+    );
+
 
 
   if (alunosMesmoHorario.length === 0) {
@@ -259,6 +277,19 @@ function abrirPopupListaAlunos(horarioConsulta, especialista, event) {
   popup.style.display = 'block';
  
 }
+
+function filtrarAlunosNoIntervalo(horarioInicioPrincipal, horarioFimPrincipal, especialista) {
+  const alunos = window.agendamentosAlunos || [];
+
+  return alunos.filter(p => {
+    if (!p.Eh_Aluno || p.Especialista !== especialista) return false;
+
+    // Ignora se os horários não sobrepõem
+    return !(p.Horario_da_consulta >= horarioFimPrincipal || 
+             p.Horario_de_Termino_da_consulta <= horarioInicioPrincipal);
+  });
+}
+
 
 function abrirEdicaoAluno(agendamento) {
   pacientesFiltrados = todosPacientes.filter(({ Especialista }) => Especialista === list.value);

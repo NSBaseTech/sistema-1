@@ -156,7 +156,48 @@
             </div>
 
             <input class="out-button" onclick="logout()" type="button" value="SAIR" id="btn_agendamento">
+
+
+            
         </form>
+
+        
+
+       <!-- Botão flutuante -->
+<button id="ajudaBtn" title="Ajuda">
+  <i class="bi bi-question-circle"></i>
+</button>
+
+<!-- Popup de ajuda -->
+<div id="ajudaPopup" style="display: none;">
+  <div class="popup-fechar" onclick="fecharAjuda()">×</div>
+
+  <div class="ajuda-form">
+    <label for="tela">Tela com problema:</label>
+    <select id="tela">
+      <option value="">Selecione</option>
+      <option value="Cadastro de paciente">Cadastro de paciente</option>
+      <option value="Fluxo de caixa">Fluxo de caixa</option>
+      <option value="Agendamento">Agendamento</option>
+      <option value="Lista de consulta">Lista de consulta</option>
+      <option value="Lista de paciente">Lista de paciente</option>
+      <option value="Chat">Chat</option>
+      <option value="Perfil">Perfil</option>
+    </select>
+
+    <label for="descricao">Descrição do problema:</label>
+    <textarea id="descricao" rows="4" placeholder="Descreva o problema..."></textarea>
+
+    <button type="button" onclick="enviarAjuda()">Enviar</button>
+  </div>
+
+  <div class="ajuda-lista">
+    <div class="lista-titulo">Minhas Solicitações</div>
+    <div id="listaMensagens">
+      <!-- Mensagens aparecerão aqui -->
+    </div>
+  </div>
+</div>
         <button onclick="toggleChat()" class="open-chat-btn1" id="open-chat-btn1">
             <i class="bi bi-chat-dots"></i>
         </button>

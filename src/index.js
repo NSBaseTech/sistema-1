@@ -1,4 +1,7 @@
 require('express-async-errors')
+require('dotenv').config(); // garante que process.env funcione
+
+const { v4: uuidv4 } = require('uuid'); // geração de IDs únicos :contentReference[oaicite:1]{index=1}
 
 const SECRET = "Nayara bobona askdp[ asopdj opsad psapod iopasidp[ oas[pd kap"
 
@@ -555,6 +558,98 @@ app.get('/agendamentos', (req, res) => {
     });
 });
 
+
+
+
+
+
+
+//botao ajuda
+
+// app.post("/ajuda", async (req, res) => {
+//     try {
+//         const { tela, descricao } = req.body;
+
+//         if (!tela || !descricao) {
+//             return res.status(400).json({ error: "Campos obrigatórios: tela e descrição." });
+//         }
+
+//         const novaAjuda = await prisma.ajuda.create({
+//             data: {
+//                 tela,
+//                 descricao,
+//             }
+//         });
+
+//         res.status(201).json({
+//             message: "Solicitação registrada com sucesso.",
+//             ajuda: novaAjuda
+//         });
+//     } catch (error) {
+//         console.error("Erro ao registrar ajuda:", error);
+//         res.status(500).json({ error: "Erro interno ao salvar ajuda." });
+//     }
+// });
+
+app.post("/ajuda", async (req, res) => {
+  try {
+    const { tela, descricao } = req.body;
+    if (!tela || !descricao) return res.status(400).json({ error: "Campos obrigatórios" });
+
+    const nova = await prisma.ajuda.create({
+      data: { tela, descricao, status: 'Recebido', criadoEm: new Date() }
+    });
+
+    const id = nova.id;
+    const ticket = id.split('-')[0]; // código curto
+
+    const base = "https://glorious-journey-5g475pg9gvjw3749q-3001.app.github.dev";
+    const links = {
+      Recebido: `${base}/ajuda/${id}/status/Recebido`,
+      'Em Andamento': `${base}/ajuda/${id}/status/Em%20Andamento`,
+      Concluído: `${base}/ajuda/${id}/status/Concluído`
+    };
+
+    const html = `
+      <p><strong>Chamado #${ticket}</strong></p>
+      <p><strong>${tela}</strong> – ${descricao}</p>
+      <p>Status:</p>
+      <a href="${links.Recebido}"><button style="background:#17a2b8;color:white;">✅ Recebido</button></a>
+      <a href="${links['Em Andamento']}"><button style="background:#ffc107;color:black;">🕒 Em Andamento</button></a>
+      <a href="${links.Concluído}"><button style="background:#28a745;color:white;">✅ Concluído</button></a>
+    `;
+
+    await enviarEmail(process.env.NODEMAILER_EMAIL, `Novo chamado #${ticket}`, html);
+
+    res.status(201).json({ message: 'Chamado criado e e‑mail enviado.', ajuda: nova });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao criar chamado.' });
+  }
+});
+
+
+app.get("/ajuda", async (req, res) => {
+  try {
+    const ajudas = await prisma.ajuda.findMany({ orderBy: { criadoEm: 'desc' } });
+    res.json(ajudas);
+  } catch (error) {
+    console.error("Erro ao listar ajudas:", error);
+    res.status(500).json({ error: "Erro ao carregar solicitações" });
+  }
+});
+
+
+app.get('/ajuda/:id/status/:status', async (req, res) => {
+  const { id, status } = req.params;
+  try {
+    await prisma.ajuda.update({ where: { id }, data: { status } });
+    res.send(`<h2>Status do chamado atualizado para: ${status}</h2>`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Erro ao atualizar status.');
+  }
+});
 
 
 
