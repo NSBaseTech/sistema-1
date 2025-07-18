@@ -575,6 +575,12 @@ document.getElementById('agendamento').addEventListener('click', () => {
     status_pagamentoinp.value = ""
     observacaoinp.value = ""
     id_agendamento.value = ""
+    document.getElementById("eh_aluno").checked = false;
+    const mostrarSubformCheckbox = document.getElementById('mostrarSubform');
+    const subform = document.getElementById('subform');
+
+    mostrarSubformCheckbox.checked = false;   // checkbox desmarcado
+    subform.style.display = 'none'; 
     modAgen.showModal()
 });
 
@@ -697,6 +703,7 @@ function agendamento(event) {
         status_pagamentoinp.value = "";
         observacaoinp.value = "";
         document.getElementById("eh_aluno").checked = false;  // só para resetar o checkbox
+        
     };
 
     
@@ -757,39 +764,51 @@ const createAppointment = (data) => {
     
 
    const checkForConflicts = (data, callback, agendamentoId = null) => {
-    // Somente agendamentos principais devem ser verificados
-    fetch(`/agendamentos?data=${data.Data_do_Atendimento}&especialista=${data.Especialista}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Erro ao buscar agendamentos.');
+          if (data.Eh_Aluno) {
+          callback(data);
+          return;
             }
-            return response.json();
-        })
-        .then(existingAppointments => {
-            // Filtra apenas agendamentos principais (ignora os alunos)
-            const agendamentosPrincipais = existingAppointments.filter(a => !a.Eh_Aluno);
+        // Adiciona o filtro de especialista à consulta
+        fetch(`/agendamentos?data=${data.Data_do_Atendimento}&especialista=${data.Especialista}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar agendamentos.');
+                }
+                return response.json();
+            })
+            .then(existingAppointments => {
+                console.log(existingAppointments, data, agendamentoId)
+                // Verifica se há conflitos considerando o agendamento atual
+                const agendamentosPrincipais = existingAppointments.filter(a => !a.Eh_Aluno);
 
-            const conflict = agendamentosPrincipais.some(appt => {
-                // Ignora a si mesmo
-                if (agendamentoId && appt.id === agendamentoId) return false;
-
-                // Verifica sobreposição de horários
-                return !(appt.Horario_de_Termino_da_consulta <= data.Horario_da_consulta ||
-                         appt.Horario_da_consulta >= data.Horario_de_Termino_da_consulta);
+               const conflict = agendamentosPrincipais.some(appt => {
+                    if (agendamentoId && appt.id === agendamentoId) return false;
+                    
+                    // Verifica se a data e o especialista são os mesmos
+                    if (appt.Data_do_Atendimento !== data.Data_do_Atendimento || appt.Especialista !== data.Especialista) {
+                        return false;
+                    }
+                    // Verifica se há sobreposição considerando todos os casos possíveis
+                    return !(appt.Horario_de_Termino_da_consulta <= data.Horario_da_consulta || 
+                             appt.Horario_da_consulta >= data.Horario_de_Termino_da_consulta);
+                });
+    
+                if (conflict) {
+                    alert("Horário já está ocupado. Escolha outro horário.");
+                    alertShown = true;  // Defina a flag para evitar alertas futuros
+                } else {
+                    callback(data); // Chama a função callback para agendar
+                }
+    
+                console.log(conflict);   
+            })
+            .catch(error => {
+                console.error('Erro ao verificar conflitos:', error);
+                alertShown = false;  // Defina a flag para evitar alertas futuros
+                // Trate o erro de forma apropriada, como exibir uma mensagem ao usuário
+                alert('Ocorreu um erro ao verificar conflitos. Tente novamente mais tarde.');
             });
-
-            if (conflict) {
-                alert("Horário já está ocupado. Escolha outro horário.");
-            } else {
-                callback(data);
-            }
-        })
-        .catch(error => {
-            console.error('Erro ao verificar conflitos:', error);
-            alert('Ocorreu um erro ao verificar conflitos. Tente novamente mais tarde.');
-        });
-};
-
+    };
 
     const appointmentData = {
         Nome: inputs.nome,
