@@ -859,20 +859,19 @@ a {
 
   .button1 {
     left: 261px;
-    top: 8px;
+    top: -2px;
     margin-top: 5%;
   }
 
   .button2 {
-    left: 285px;
-    top: -2px;
-    ;
+    left: 284px;
+    top: -11px;
     margin-top: 0;
   }
 
   .button3 {
-    left: 285px;
-    top: 8px;
+    left: 284px;
+    top: -2px;
     margin-top: 0;
   }
 
