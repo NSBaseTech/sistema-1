@@ -30,7 +30,7 @@ btnNew.onclick = (event) => {
   date.value = "";
 
 
-  
+
   fetch('/Fluxo_de_caixa', {
     method: 'POST',
     body: JSON.stringify({
@@ -44,7 +44,7 @@ btnNew.onclick = (event) => {
       "Content-Type": "application/json"
     }
   }).then(() => {
-      location.reload();
+    location.reload();
   })
 
 };
@@ -79,9 +79,8 @@ function insertItem(item, index) {
     }</td>
     <td>${item.Data}</td>
     <td class="columnAction">
-      ${
-        item.Descricao.startsWith('Atendimento: ') ? '' : `<button onclick="deleteItem(${index})"><i class='bx bx-trash'></i></button>`
-      }
+      ${item.Descricao.startsWith('Atendimento: ') ? '' : `<button onclick="deleteItem(${index})"><i class='bx bx-trash'></i></button>`
+    }
       
     </td>
   `;
@@ -98,11 +97,11 @@ function loadItens() {
 
   tbody.innerHTML = "";
 
-  const itensFiltrados = items.filter(item => item.Especialista === Usuario 
-    && (mes === '' || item.Data.split('-')[1] === mes) 
-    && (selectedYear === '' || item.Data.split('-')[0] === selectedYear) 
+  const itensFiltrados = items.filter(item => item.Especialista === Usuario
+    && (mes === '' || item.Data.split('-')[1] === mes)
+    && (selectedYear === '' || item.Data.split('-')[0] === selectedYear)
     && (selectedPaciente === '' || item.Descricao === selectedPaciente))
-    console.log(itensFiltrados)
+  console.log(itensFiltrados)
   itensFiltrados.forEach((item, index) => {
     insertItem(item, index);
   });
@@ -139,10 +138,10 @@ const getItensBD = async () => {
   items = await response.json()
 
 
-  const itensFiltrados = items.filter(item => item.Especialista === Usuario) 
+  const itensFiltrados = items.filter(item => item.Especialista === Usuario)
   const atendimentos = itensFiltrados.filter(items => items.Descricao.startsWith('Atendimento: ')).map(arg => arg.Descricao)
-   
-   
+
+
   let atendimentosDistintos = [...new Set(atendimentos)];
 
   document.getElementById('selected-Pacientes').innerHTML += atendimentosDistintos.map(arg => `
@@ -167,10 +166,30 @@ const getItensBD = async () => {
 
     const data = await response.json()
 
-    Usuario = data.Usuario
+    let NomeSaudacao = "";
 
-    const userGreeting = document.getElementById('userGreeting');
-    userGreeting.textContent = `Olá, ${Usuario}!`;
+if (data.Secretaria) {
+  Usuario = "Sandra"; // Para filtrar os dados
+  NomeSaudacao = "Secretária";
+
+  const tituloFluxo = document.getElementById("tituloFluxo");
+  if (tituloFluxo) {
+    tituloFluxo.textContent = "Fluxo de Caixa de Dr(a). Sandra";
+  }
+
+} else {
+  Usuario = data.Usuario;
+  NomeSaudacao = data.Usuario;
+
+  const tituloFluxo = document.getElementById("tituloFluxo");
+  if (tituloFluxo) {
+    tituloFluxo.textContent = `Caixa de Dr(a). ${Usuario}`;
+  }
+}
+
+const userGreeting = document.getElementById('userGreeting');
+userGreeting.textContent = `Olá, ${NomeSaudacao}!`;
+
 
     await getItensBD()
 
@@ -191,7 +210,7 @@ document.getElementById("ch-side").addEventListener("change", event => {
 
 document.getElementById("btn_voltar_flx").addEventListener("click", () => {
   window.location.href = '../Menu/menu.html';
-}); 
+});
 
 document.getElementById("open-chat-btn1").addEventListener("click", () => {
   window.location.href = '../chat/chat.html'
@@ -201,48 +220,48 @@ const draggable = document.getElementById('draggable-container');
 let isDraggable = true;
 let mouseDown = false;
 
-draggable.onmousedown = function (event){
-   if (!isDraggable) return;
+draggable.onmousedown = function (event) {
+  if (!isDraggable) return;
 
-   mouseDown = true;
-   event.preventDefault();
-   
-   let shiftX = event.clientX - draggable.getBoundingClientRect().left;
-   let shiftY = event.clientY - draggable.getBoundingClientRect().top;
+  mouseDown = true;
+  event.preventDefault();
 
-   function moveAt(pageX, pageY) {
-       draggable.style.left = pageX - shiftX + 'px';
-       draggable.style.top = pageY - shiftY + 'px';
-   }
+  let shiftX = event.clientX - draggable.getBoundingClientRect().left;
+  let shiftY = event.clientY - draggable.getBoundingClientRect().top;
 
-   function onMouseMove(event) {
-       if (mouseDown) {
-           moveAt(event.pageX, event.pageY);
-       }
-   }
+  function moveAt(pageX, pageY) {
+    draggable.style.left = pageX - shiftX + 'px';
+    draggable.style.top = pageY - shiftY + 'px';
+  }
 
-   document.addEventListener('mousemove', onMouseMove);
+  function onMouseMove(event) {
+    if (mouseDown) {
+      moveAt(event.pageX, event.pageY);
+    }
+  }
 
-   draggable.onmouseup = function () {
-       mouseDown = false;
-       document.removeEventListener('mousemove', onMouseMove);
-   };
+  document.addEventListener('mousemove', onMouseMove);
+
+  draggable.onmouseup = function () {
+    mouseDown = false;
+    document.removeEventListener('mousemove', onMouseMove);
+  };
 };
 
-window.addEventListener("message", (event)=>{
-if (event.data === "desligamouse"){
-draggable.width = "50" 
-draggable.height = "50"
-}
+window.addEventListener("message", (event) => {
+  if (event.data === "desligamouse") {
+    draggable.width = "50"
+    draggable.height = "50"
+  }
 
-if (event.data === "ligamouse"){
-draggable.width = "400" 
-draggable.height = "500"
-}
+  if (event.data === "ligamouse") {
+    draggable.width = "400"
+    draggable.height = "500"
+  }
 
 })
 
 document.getElementById("open-chat-btn1").addEventListener("click", () => {
-    window.location.href = '../chat/chat.html'
- })
+  window.location.href = '../chat/chat.html'
+})
 
