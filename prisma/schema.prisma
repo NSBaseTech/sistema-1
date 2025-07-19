@@ -134,9 +134,10 @@ model Atendimento {
 //botao ajuda
 
 model Ajuda {
-  id        String   @id @default(uuid())
-  tela      String
-  descricao String
-  status    String   @default("Recebido")
-  criadoEm  DateTime @default(now())
+  id          String   @id @default(uuid())
+  tela        String
+  descricao   String
+  status      String   @default("Recebido")
+  criadoEm    DateTime @default(now())
+  especialista String                       // <-- novo campo
 }

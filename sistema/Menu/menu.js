@@ -150,7 +150,8 @@ ajudaBtn.addEventListener('click', async () => {
   ajudaPopup.style.display = 'flex';
 
   try {
-    const resp = await fetch("https://glorious-journey-5g475pg9gvjw3749q-3001.app.github.dev/ajuda");
+    const resp = await fetch(`/ajuda?especialista=${encodeURIComponent(Nome)}`);
+
     if (!resp.ok) throw new Error("Falha ao buscar ajudas");
     const dados = await resp.json();
 
@@ -202,17 +203,19 @@ async function enviarAjuda() {
   }
 
   try {
-    const response = await fetch("https://glorious-journey-5g475pg9gvjw3749q-3001.app.github.dev/ajuda", {
+    const response = await fetch("/ajuda", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tela, descricao })
+      body: JSON.stringify({
+        tela,
+        descricao,
+        especialista: Nome // <-- enviar nome do especialista logado
+      })
     });
 
     if (!response.ok) throw new Error("Erro ao enviar ajuda");
 
-    // Após envio, podemos recarregar a lista:
-    ajudaBtn.click(); // reabre o popup e recarrega a lista
-
+    ajudaBtn.click();
     document.getElementById('descricao').value = '';
     document.getElementById('tela').selectedIndex = 0;
 
@@ -223,4 +226,5 @@ async function enviarAjuda() {
     alert('Erro ao enviar ajuda. Tente novamente.');
   }
 }
+
 

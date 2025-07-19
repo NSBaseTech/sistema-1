@@ -15,8 +15,8 @@ const app = express()
 const { fazedor_de_senha } = require("./hash")
 const { enviarEmail } = require("./email")
 
-app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({limit: '50mb'}));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb' }));
 
 
 app.use("/sistema", express.static("sistema"))
@@ -381,8 +381,9 @@ app.delete("/Fluxo_de_caixa", async (req, res) => {
 
 app.get("/Lista_espera/:especialista", async (req, res) => {
     const lista_espera = await prisma.Espera.findMany({
-        where: { 
-            Especialista: req.params.especialista }
+        where: {
+            Especialista: req.params.especialista
+        }
     })
 
 
@@ -435,8 +436,8 @@ app.post("/cadastro_prof", async (req, res) => {
 })
 
 app.get("/cadastro_prof/:especialista", async (req, res) => {
-    const data = await prisma.cadastro_prof.findUnique ({
-        where:{
+    const data = await prisma.cadastro_prof.findUnique({
+        where: {
             Especialista: req.params.especialista
         }
     })
@@ -447,10 +448,10 @@ app.get("/cadastro_prof/:especialista", async (req, res) => {
 })
 
 app.put("/cadastro_prof/:especialista", async (req, res) => {
-    const data = await prisma.cadastro_prof.update ({
-        where:{
+    const data = await prisma.cadastro_prof.update({
+        where: {
             Especialista: req.params.especialista
-        }, data:req.body
+        }, data: req.body
     })
 
     res.json(
@@ -492,15 +493,15 @@ app.put("/atendimento", async (req, res) => {
 
 
 app.post("/chat", async (req, res) => {
-if (req.body.focus)
-    await prisma.messages.updateMany({
-        data: { visualizado: true },
-        where: {
-            from: req.body.to,
-            to: req.body.from,
-            visualizado: false,
-        }
-    })
+    if (req.body.focus)
+        await prisma.messages.updateMany({
+            data: { visualizado: true },
+            where: {
+                from: req.body.to,
+                to: req.body.from,
+                visualizado: false,
+            }
+        })
 
 
     const messages = await prisma.messages.findMany({
@@ -536,7 +537,7 @@ app.post("/chat/pendentes", async (req, res) => {
         }
     })
 
-    const users = message.map(({from}) => from).reduce((acc, cur) => {
+    const users = message.map(({ from }) => from).reduce((acc, cur) => {
         if (acc.includes(cur)) return acc
         return [...acc, cur]
     }, [])
@@ -592,46 +593,59 @@ app.get('/agendamentos', (req, res) => {
 // });
 
 app.post("/ajuda", async (req, res) => {
-  try {
-    const { tela, descricao } = req.body;
-    if (!tela || !descricao) return res.status(400).json({ error: "Campos obrigatórios" });
+    try {
+        const { tela, descricao, especialista } = req.body;
+        if (!tela || !descricao || !especialista) return res.status(400).json({ error: "Campos obrigatórios" });
 
-    const nova = await prisma.ajuda.create({
-      data: { tela, descricao, status: 'Recebido', criadoEm: new Date() }
-    });
+        const nova = await prisma.ajuda.create({
+            data: {
+                tela,
+                descricao,
+                especialista,
+                status: 'Recebido',
+                criadoEm: new Date()
+            }
+        })
 
-    const id = nova.id;
-    const ticket = id.split('-')[0]; // código curto
+        const id = nova.id;
+        const ticket = id.split('-')[0]; // código curto
 
-    const base = "https://glorious-journey-5g475pg9gvjw3749q-3001.app.github.dev";
-    const links = {
-      Recebido: `${base}/ajuda/${id}/status/Recebido`,
-      'Em Andamento': `${base}/ajuda/${id}/status/Em%20Andamento`,
-      Concluído: `${base}/ajuda/${id}/status/Concluído`
-    };
+        const base = "https://glorious-journey-5g475pg9gvjw3749q-3001.app.github.dev";
+        const links = {
+            Recebido: `${base}/ajuda/${id}/status/Recebido`,
+            'Em Andamento': `${base}/ajuda/${id}/status/Em%20Andamento`,
+            Concluído: `${base}/ajuda/${id}/status/Concluído`
+        };
 
-    const html = `
+        const html = `
       <p><strong>Chamado #${ticket}</strong></p>
       <p><strong>${tela}</strong> – ${descricao}</p>
+      <p><em>Solicitado por: <strong>${especialista}</strong></em></p>
       <p>Status:</p>
       <a href="${links.Recebido}"><button style="background:#17a2b8;color:white;">✅ Recebido</button></a>
       <a href="${links['Em Andamento']}"><button style="background:#ffc107;color:black;">🕒 Em Andamento</button></a>
       <a href="${links.Concluído}"><button style="background:#28a745;color:white;">✅ Concluído</button></a>
     `;
 
-    await enviarEmail(process.env.NODEMAILER_EMAIL, `Novo chamado #${ticket}`, html);
+        await enviarEmail(process.env.NODEMAILER_EMAIL, `Novo chamado #${ticket}`, html);
 
-    res.status(201).json({ message: 'Chamado criado e e‑mail enviado.', ajuda: nova });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Erro ao criar chamado.' });
-  }
+        res.status(201).json({ message: 'Chamado criado e e‑mail enviado.', ajuda: nova });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Erro ao criar chamado.' });
+    }
 });
 
 
 app.get("/ajuda", async (req, res) => {
+  const { especialista } = req.query;
+
   try {
-    const ajudas = await prisma.ajuda.findMany({ orderBy: { criadoEm: 'desc' } });
+    const ajudas = await prisma.ajuda.findMany({
+      where: especialista ? { especialista } : undefined,
+      orderBy: { criadoEm: 'desc' }
+    });
+
     res.json(ajudas);
   } catch (error) {
     console.error("Erro ao listar ajudas:", error);
@@ -641,14 +655,14 @@ app.get("/ajuda", async (req, res) => {
 
 
 app.get('/ajuda/:id/status/:status', async (req, res) => {
-  const { id, status } = req.params;
-  try {
-    await prisma.ajuda.update({ where: { id }, data: { status } });
-    res.send(`<h2>Status do chamado atualizado para: ${status}</h2>`);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Erro ao atualizar status.');
-  }
+    const { id, status } = req.params;
+    try {
+        await prisma.ajuda.update({ where: { id }, data: { status } });
+        res.send(`<h2>Status do chamado atualizado para: ${status}</h2>`);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erro ao atualizar status.');
+    }
 });
 
 
