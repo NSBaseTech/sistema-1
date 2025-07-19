@@ -629,7 +629,7 @@ app.post("/ajuda", async (req, res) => {
 
         await enviarEmail(process.env.NODEMAILER_EMAIL, `Novo chamado #${ticket}`, html);
 
-        res.status(201).json({ message: 'Chamado criado e e‑mail enviado.', ajuda: nova });
+        res.status(201).json({ message: 'Chamado criado e e‑mail enviado.', ajuda: { ...nova, ticket } });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Erro ao criar chamado.' });
@@ -646,7 +646,13 @@ app.get("/ajuda", async (req, res) => {
       orderBy: { criadoEm: 'desc' }
     });
 
-    res.json(ajudas);
+    const ajudasComTicket = ajudas.map(a => ({
+  ...a,
+  ticket: a.id.split('-')[0]
+}));
+
+res.json(ajudasComTicket);
+
   } catch (error) {
     console.error("Erro ao listar ajudas:", error);
     res.status(500).json({ error: "Erro ao carregar solicitações" });

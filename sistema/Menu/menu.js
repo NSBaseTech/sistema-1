@@ -162,15 +162,16 @@ ajudaBtn.addEventListener('click', async () => {
       div.classList.add('mensagem');
       div.dataset.id = item.id; // útil pra atualizações futuras
 
-      div.innerHTML = `
-        <strong>${item.tela}</strong>
-        <p>${item.descricao}</p>
-        <div class="botoes-status">
-          <button class="recebido ${item.status === 'Recebido' ? 'ativo' : ''}">Recebido</button>
-          <button class="andamento ${item.status === 'Em Andamento' ? 'ativo' : ''}">Em Andamento</button>
-          <button class="concluido ${item.status === 'Concluído' ? 'ativo' : ''}">Concluído</button>
-        </div>
-      `;
+     div.innerHTML = `
+  <p><strong>Chamado #${item.ticket}</strong> 
+  <strong>Tela do problema: ${item.tela}</strong>
+  <p>${item.descricao}</p>
+  <div class="botoes-status">
+    <button class="recebido ${item.status === 'Recebido' ? 'ativo' : ''}">Recebido</button>
+    <button class="andamento ${item.status === 'Em Andamento' ? 'ativo' : ''}">Em Andamento</button>
+    <button class="concluido ${item.status === 'Concluído' ? 'ativo' : ''}">Concluído</button>
+  </div>
+`;
 
       div.querySelectorAll('.botoes-status button').forEach(botao => {
         botao.addEventListener('click', () => {
@@ -181,6 +182,17 @@ ajudaBtn.addEventListener('click', async () => {
       });
 
       listaMensagens.appendChild(div);
+    });
+
+    const inputFiltro = document.getElementById("filtroTicket");
+
+    inputFiltro.addEventListener("input", () => {
+      const termo = inputFiltro.value.trim().toLowerCase();
+
+      document.querySelectorAll(".mensagem").forEach(div => {
+        const ticket = div.querySelector("strong")?.innerText?.toLowerCase() || "";
+        div.style.display = ticket.includes(termo) ? "block" : "none";
+      });
     });
 
   } catch (err) {
